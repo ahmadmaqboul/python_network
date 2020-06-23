@@ -2,11 +2,11 @@ import socket
 import pickle
 import threading
 
-def recive(my_info):
+def recive(my_info): #tis is the main function reciving the data 
 
     UDP_IP = my_info[0] #Server IP
     UDP_PORT = my_info[1] #Server Port
-    addr_list=[]
+    addr_list=[] #list have only the auth users 
     
 
     sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
@@ -16,10 +16,10 @@ def recive(my_info):
         data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
         data = pickle.loads(data)
         print(data)
-        s_addr = data[1]
+        s_addr = data[1] #sender addrese in this form  -> [127.0.0.1,5005]
         
         if s_addr in addr_list : # start conv or send password 
-            print("write you message here please : ")
+            print("write you message here please : ") # make user send a message to the sender 
             send(input(),my_info,data[1])
 
             return True
@@ -34,7 +34,7 @@ def recive(my_info):
                 addr_list.append(s_addr)
                 
 
-def authntecation(password):
+def authntecation(password):#check if password true or not (we can use enc algo depend on public and private key)
 
     if password == "password":
         return True 
@@ -49,7 +49,7 @@ def send(message, my_addr, s_addr):
     sock.sendto(message_to_send, (s_addr[0], s_addr[1]))
     
 
-def password_request(s_addr,my_addr):
+def password_request(s_addr,my_addr): # if password false send to retype it 
     
     sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     message = ["please enter password : ",my_addr]
@@ -59,7 +59,7 @@ def password_request(s_addr,my_addr):
     return authntecation(password)
 
 
-def recive_pass(my_info):
+def recive_pass(my_info): # this function must use to get the password from user if password false
 
     password="password"
     return password
