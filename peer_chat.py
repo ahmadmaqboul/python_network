@@ -8,24 +8,23 @@ def recive(my_info): #tis is the main function reciving the data
     UDP_PORT = my_info[1] #Server Port
     addr_list=[] #list have only the auth users 
     
-
     sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    message=pickle.dumps([input(),my_info])
     sock.bind((UDP_IP, UDP_PORT))
 
     while True: # make server listen all time 
         data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
         data = pickle.loads(data)
-        print(data)
         s_addr = data[1] #sender addrese in this form  -> [127.0.0.1,5005]
         
         if s_addr in addr_list : # start conv or send password 
+            print("message from",s_addr,":",data[0])
             print("write you message here please : ") # make user send a message to the sender 
-            send(input(),my_info,data[1])
-
-            return True
+            message=pickle.dumps([input(),my_info])
+            sock.sendto(message,(s_addr[0],s_addr[1]))
+            
 
         else: # auth 
-            
             a=password_request(s_addr,my_info)
             while a == False :
                 a = password_request(s_addr,my_info)
@@ -65,17 +64,19 @@ def recive_pass(my_info): # this function must use to get the password from user
     return password
 
 
-
 def file_send():
     print()
 
 
 
-
 if __name__ == "__main__":
-    
     my_info=["127.0.0.1",5005]
-    recive(my_info)
+    x = threading.Thread(target=recive(my_info))
+    x.start()
+
+
+
+
 
 
     
